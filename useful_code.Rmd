@@ -1,0 +1,38 @@
+---
+title: "Useful Code"
+author: "Madison Arnsbarger"
+date: "5/31/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R
+#### Load SPSS (.sav) data
+```{r SPSS_Data, eval=FALSE, echo=TRUE}
+library(foreign)
+setwd("~/.../")
+file.choose("data.sav")
+df <- read.spss("data.sav", to.data.frame = TRUE) # class(df) is data.frame
+
+```
+
+#### Remove all numbers from a string
+```{r gsub, eval=FALSE, echo=TRUE}
+df$string_variable <- gsub("\\d+", "", df$string_variable)
+```
+
+#### Query database
+```{r Query_Database, eval=FALSE, echo=TRUE}
+source(file="pg_connect.R") # make secure connection to database
+df <- dbReadTable(con, c("schema-name","table-name"), row.name = FALSE)
+```
+
+#### Query single variable
+```{r Query_var, eval=FALSE, echo=TRUE}
+variable <- dbGetQuery(con,
+                       paste("SELECT", column_name_quoted,
+                             "FROM", schema_table_name))
+```
