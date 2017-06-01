@@ -1,0 +1,194 @@
+---
+title: "R Trainings: SDAL DSPG 2017"
+author: "Madison Arnsbarger"
+date: "6/1/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Data - 5/24
+```{r Load Data, eval=FALSE}
+df <- read.csv("~/sdal/projects/limbo/ArlingtonSchoolProfiles.csv", stringsAsFactors = TRUE)
+head(df)
+
+library(rio)
+df <- import("~/sdal/projects/limbo/ArlingtonSchoolProfiles.csv")
+
+# LOAD DATA FROM URL/GITHUB
+library(RCurl)
+url <- getURL("https://jaredlander.com/data/Fake%20Pizza%20Data.csv")
+data <- read.csv(textConnection(url))
+
+# LOAD DATA FROM JSON
+library(jsonlite)
+
+citibike <- fromJSON("http://citibikenyc.com/stations/json")
+  class(citibike) # list
+  class(citibike$executionTime) # character
+  class(citibike$stationBeanList) # data.frame
+
+stations <- citibike$stationBeanList
+colnames(stations)
+
+# FCC LOCATION API EXAMPLE
+library(jsonlite)
+library(data.table)
+
+FCClocation2FIPS <- function(place_id="VTRC", lon=-77.11577, lat=38.880807) {
+  res <- fromJSON(paste0("http://data.fcc.gov/api/block/find?format=json&latitude=", lat, "&longitude=", lon, "&showall=true&format=JSON"))
+  data.table(place_id = place_id, 
+             state_name = res$State$name, 
+             state_fips = res$State$FIPS, 
+             county_name = res$County$name, 
+             county_fips = res$County$FIPS, 
+             block_fips = res$Block$FIPS)
+}
+
+FCClocations2FIPS <- function(place_idCol = c("VTRC", "VT-NVC"), lonCol = c(-77.11577, -77.1894815), latCol = c(38.880807, 38.8968325)) {
+  res <- as.data.table(t(mapply(FCClocation2FIPS, place_idCol, lonCol, latCol)))
+  data.table(place_id = unlist(res$place_id), 
+             state_name = unlist(res$state_name), 
+             state_fips = unlist(res$state_fips), 
+             county_name = unlist(res$county_name), 
+             county_fips = unlist(res$county_fips), 
+             block_fips = unlist(res$block_fips))
+}
+
+# GOOGLE RADAR SEARCH EXAMPLE
+radar_search <- fromJSON(paste0("https://maps.googleapis.com/maps/api/place/radarsearch/json?location=", 37.231264, ",", -80.426745, "&radius=1609&type=grocery_or_supermarket&key=AIzaSyC9FKW-kjQlEXjfM3OgMZBJ7xE6zCN1JQI"))
+
+place_id <- "ChIJEauYKUKVTYgR03YCLT7SLeY"
+
+url <- paste0("https://maps.googleapis.com/maps/api/place/details/json?placeid=",
+              place_id,
+              "&key=AIzaSyC9FKW-kjQlEXjfM3OgMZBJ7xE6zCN1JQI")
+
+detail_search <- fromJSON(url)
+head(detail_search)
+
+```
+## Functions - 5/25
+```{r Functions}
+# functions
+function_name <- function(x,y){
+  print(x*y)
+
+}
+
+function_name(2,3)
+```
+## Groupby - 5/30
+```{r, echo=TRUE, eval=FALSE}
+head(mtcars)
+
+# we want to know the average mpg for all clylinder types
+
+# manual way 
+mean(mtcars[mtcars$cyl==4, ]$mpg)
+mean(mtcars[mtcars$cyl==6, ]$mpg)
+mean(mtcars[mtcars$cyl==8, ]$mpg)
+
+# groupby way
+library(dplyr)
+group_by(mtcars, cyl)
+# lazy valuation = the only time a computer makes a calculation is when it is told to... so this group_by() function doesn't actually make R calculate anything.
+summarize(group_by(mtcars, cyl), mpg_mean = mean(mpg)) # <------- group_by way
+summarize(group_by(mtcars, cyl), mpg_mean = mean(mpg), mpg_sd = sd(mpg))
+
+# piping way
+mtcars %>% group_by(cyl) %>% summarize(mpg_mean = mean(mpg), mpg_sd = sd(mpg))
+
+# ------------------------------------------------------------------------------------------------
+# control flow
+# if statements
+
+if (TRUE) {
+  print(3)
+}
+print(10)
+
+if (FALSE) {
+  print(3)
+}
+print(10)
+
+# all of the cars with cylinder==4 returns 'numeric' for class, cylinder==6 returns '6', all others return 'NA'
+my_function <- function(row_data){
+  cylinder <- row_data['cyl']
+  if (cylinder == 4){
+    return(class(cylinder)) 
+  }
+  if (cylinder == 6){
+    return(6)
+  }
+  return(NA)
+}
+
+apply(mtcars, MARGIN = 1, my_function) # 1 indicates row-by-row, 2 indicates column-by-column
+
+# if, else...
+another_function <- function(row_data){
+  cylinder <- row_data['cyl']
+  if (cylinder == 4){
+    output <- 'buy me'
+  }
+  else {
+    output <- 'sell me'
+  }
+  return(output)
+}
+apply(mtcars, MARGIN = 1, another_function)
+
+# tidy data
+library(tidyr)
+# .... stopped paying attention
+
+library(stringr)
+load("~/sdal/projects/limbo/warTimes.rdata")
+dash <- str_detect(warTimes, '-') # returns T/F
+warTimes[dash] # returns strings containing a dash
+
+the_times <- str_split(warTimes, "(ACAEA) | -", n = 2) # string "ACAEA" used to separate begin and end dates... separate columns by "ACAEA"
+# "|" is an or condition (if it doesn't find first, it'll look for second...)
+# n = 2 tells function that we only want it to split into 2 parts, so if it finds ACAEA and -, it shouldn't split it into 3 parts
+
+# apply family
+# lapply (always gives you a list)
+# sapply (tries to give you same data format back)
+extract_first <- function(x){
+  return(x[1])
+}
+
+sapply(the_times, extract_first)
+
+# OR
+
+sapply(the_times, function(x) {x[1]})
+
+start_dates <- sapply(the_times, function(x) {x[1]})
+
+str_extract(start_dates, '[0-9][0-9][0-9][0-9]')
+```
+## American Community Survey - 5/31
+```{r}
+
+```
+
+## Plotting - 6/1
+```{r Plotting, warning=FALSE, message=FALSE}
+library(ggplot2)
+
+hist(diamonds$price)
+ggplot(diamonds, aes(x=price)) +geom_density()
+ggplot(data= diamonds, mapping = aes(x = price, fill = cut)) + geom_histogram()
+# discrete vars, use bar graphs
+ggplot(data = diamonds, aes(x=cut, fill = color)) + geom_bar()
+
+ggplot(diamonds) +
+    geom_point(aes(x=carat, y=price, color = color)) +
+    facet_wrap(~cut)
+```
+
