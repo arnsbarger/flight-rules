@@ -190,5 +190,12 @@ ggplot(data = diamonds, aes(x=cut, fill = color)) + geom_bar()
 ggplot(diamonds) +
     geom_point(aes(x=carat, y=price, color = color)) +
     facet_wrap(~cut)
+
+g <- ggplot(diamonds, aes(x=carat, y=price, fill = color)) + geom_hex()
+g + theme_minimal()
+
+library(ggthemes)
+g <- ggplot(diamonds, aes(x=carat, y = price)) + geom_point()
+g + theme_economist()
 ```
 
