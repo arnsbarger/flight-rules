@@ -36,3 +36,13 @@ variable <- dbGetQuery(con,
                        paste("SELECT", column_name_quoted,
                              "FROM", schema_table_name))
 ```
+
+#### Basic Function 
+```{r Functions}
+function_name <- function(x,y){
+  print(x*y)
+}
+
+function_name(2,3)
+```
+
