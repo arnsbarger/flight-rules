@@ -4,9 +4,7 @@ flight-rules
 Flight rules for R, Git, bash, etc...
 
 This has been inspired by
-[chendaniely](https://github.com/chendaniely/r-flight-rules) and [k88hudson](https://github.com/k88hudson/git-flight-rules)
-
-Where they quote:
+[chendaniely](https://github.com/chendaniely/r-flight-rules) and [k88hudson](https://github.com/k88hudson/git-flight-rules) where they quote:
 
 Flight rules are a
 [guide for astronauts](http://www.jsc.nasa.gov/news/columbia/fr_generic.pdf) about what to do when things go wrong (when you
