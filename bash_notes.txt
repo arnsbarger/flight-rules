@@ -1,0 +1,43 @@
+Bash tutorial 5/22/2017 SDAL DSPG:
+
+ls (list)
+cd (change directory)
+ls -a (list invisible files also)
+cd .. (move up to parent folder)
+ls -alh (shows contents of folder, permissions/size/etc of each object)
+	drwxr-xr-x
+	- first digit = d (directory) or l (file)
+	- first group of 3 digits = what you can do
+	- second group of 3 digits = what group can do
+	- third group of 3 digits = what others can do
+	- r = can read file
+	- w = write file
+	- x = execute file
+mkdir folder_name (creates folder called folder_name)
+pwd (print working directory)
+touch title.txt (creates .txt file called title.txt)
+touch subfoldername/new_textfile_name.txt
+cat title.txt (prints head of the actual text content of title.txt)
+more title.txt (prints entire text content, press q to quit)
+rm title.txt (deletes title.txt)
+rm -rf <file> (force rm)
+mv title.txt new_desired_directory (move title.txt to folder called new_desired_directory)
+history (prints entire history of commands)
+cp title.txt title2.txt(duplicate title.txt and call new file title2.txt)
+nano title.txt (open title.txt in nano to edit the text)
+exit (exit RStudio server)
+
+RScript <file> (run file from command line)
+nohup Rscript <file> (keep running file, even if I log out)
+nohup Rscript <file> & (keep running file, even if I log out AND run it in the background!)
+
+To save:
+- "WriteOut" = "Save"
+- "^" = control key, not shift key...
+
+
+
+
+ssh -L 8787:localhost:8787 sdal_r
+OR
+ssh maddieka@lightfoot.vbi.vt.edu

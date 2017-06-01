@@ -1,0 +1,42 @@
+Git Notes SDAL DSPG 2017
+
+git config —list (check your account settings)
+mkdir new_directory (create git repository from scratch)
+git init (initialize git repository)
+ **don’t have to initialize any subfolders
+git status (what’s going on in this project?)
+	* shows new uncommitted files in red
+	* shows files in staging area in green
+git add <file> (adds file to staging area)
+git add . (whatever folder you’re in, this command adds your current folder and all of its subfolders automatically)
+git commit (commits everything in staging area; opens up nano window to write commit message)
+git commit -m “insert 1 line commit message without opening text editor”
+git diff (if you forget what changes you made, git will show you the differences between version 1 and version 2)
+git log (shows history of commits, including unique commit id’s and commit message)
+git log —oneline (shorthand version of git log, doesn’t include commit id’s)
+git checkout <file> (if you decide you don’t like a change that was made and you haven’t committed yet, use this to return to previous version)
+git checkout <unique version number> <file>
+git remote -v (shows where you’re pushing and pulling to/from)
+
+
+* I zoned out during the .gitignore part of the lecture.
+
+REMOTE: Any folder that you have not initialized on git (could be elsewhere on your computer, GitHub, etc.)
+* ‘push’ things to a remote
+* ‘pull’ things from a remote
+* git remote add origin git@github.com:maddieka/2017sdal_dspg.git (makes the repository we created on github the origin for our work)
+
+Fork someone else’s repository…
+- press “fork”
+- git clone https://github.com/maddieka/other_repository.git
+	- cloning automatically changes the origin for you
+- make necessary change/create new file/whatever
+- add and commit
+- git push origin master
+
+if the person whose repository you forked updates their repository (how dan added all students’ pid.md files to is original repository)…
+- git remote add upstream <https link from original repository you’re trying to pull down>
+- git pull upstream master
+
+
+
