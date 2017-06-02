@@ -199,3 +199,60 @@ g <- ggplot(diamonds, aes(x=carat, y = price)) + geom_point()
 g + theme_economist()
 ```
 
+## Data.Table
+```{r data.table}
+library(data.table)
+setwd("~/Documents/SDAL/R/R Practice/")
+
+# download.file("http://download.geonames.org/export/zip/GB_full.csv.zip", "GB_full.csv.zip")
+dt <- fread(unzip(zipfile = "~/Documents/SDAL/R/R Practice/GB_full.csv.zip"))
+names(dt)
+
+# subset columns
+dt_subset_col <- dt[ , .(V2, V3, V4)] # instead of c(), do .()
+head(dt_subset_col)
+class(dt_subset_col)
+
+df_subset <- as.data.frame(dt_subset_col)
+rm("df_subset", "dt_subset_col")
+
+# subset rows
+dt_subset_row <- dt[V4 == "England", ]
+head(dt_subset_row)
+# sort datatable by column
+dt[order(V4)] # ascending
+dt[order(-V4, V3)] # descending V4, ascending V3
+
+# adding new columns
+# instead of df$new_col <- df$var1 + df$var2 ....
+dt[, new_col := V10 + V11] # use := insead of <-
+names(dt)
+
+# re-code a variable
+dt[V8 == "Aberdeen City", V8 := 'Abr City']
+head(dt[, V8])
+
+# deleting columns
+dt[, c('V6', 'V7') := NULL] # back to using c()....
+
+# using built-in functions
+head(dt)
+dt[, .(average = mean(V10, na.rm = TRUE)), by = V4] # store mean(V10) for each V4 in new column called 'average'
+
+# melting
+aqdt <- as.data.table(airquality)
+aqdt_melt <- data.table::melt(data = aqdt, 
+                 id.vars = c("Month", "Day"),
+                 measure.vars = c("Ozone", "Solar.R", "Wind", "Temp"),
+                 variable.name = 'measurement',
+                 value.name = 'reading')
+dim(aqdt)
+dim(aqdt_melt)
+
+# casting
+data.table::dcast(data = aqdt_melt, Month + Day ~ measurement) # this 'undoes' the melt process above
+
+
+
+```
+
