@@ -46,3 +46,13 @@ function_name <- function(x,y){
 function_name(2,3)
 ```
 
+#### setwd()
+If your working directory changes when you knit...
+```{r setwd(), eval=FALSE}
+if (interactive()){
+    data_location <- 'data/project/original/my.csv'
+} else {
+    data_location <- '../../data/project/original/my.csv'
+}
+```
+

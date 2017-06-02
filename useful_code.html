@@ -155,6 +155,15 @@ df &lt;- dbReadTable(con, c(&quot;schema-name&quot;,&quot;table-name&quot;), row
 function_name(2,3)</code></pre>
 <pre><code>## [1] 6</code></pre>
 </div>
+<div id="setwd" class="section level4">
+<h4>setwd()</h4>
+<p>If your working directory changes when you knit…</p>
+<pre class="r"><code>if (interactive()){
+    data_location &lt;- 'data/project/original/my.csv'
+} else {
+    data_location &lt;- '../../data/project/original/my.csv'
+}</code></pre>
+</div>
 </div>
 
 
