@@ -164,6 +164,10 @@ function_name(2,3)</code></pre>
     data_location &lt;- '../../data/project/original/my.csv'
 }</code></pre>
 </div>
+<div id="convert-empties-to-na" class="section level4">
+<h4>Convert empties to NA</h4>
+<pre class="r"><code>data[data=='' | data==' ' | data==&quot;Missing&quot;] &lt;- NA</code></pre>
+</div>
 </div>
 
 

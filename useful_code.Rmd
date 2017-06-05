@@ -56,3 +56,8 @@ if (interactive()){
 }
 ```
 
+#### Convert empties to NA
+```{r empties, eval=FALSE}
+data[data=='' | data==' ' | data=="Missing"] <- NA
+```
+

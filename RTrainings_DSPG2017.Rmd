@@ -199,7 +199,7 @@ g <- ggplot(diamonds, aes(x=carat, y = price)) + geom_point()
 g + theme_economist()
 ```
 
-## Data.Table
+## Data.Table - 6/2
 ```{r data.table}
 library(data.table)
 setwd("~/Documents/SDAL/R/R Practice/")
@@ -251,8 +251,6 @@ dim(aqdt_melt)
 
 # casting
 data.table::dcast(data = aqdt_melt, Month + Day ~ measurement) # this 'undoes' the melt process above
-
-
 
 ```
 
