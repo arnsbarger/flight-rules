@@ -61,3 +61,14 @@ if (interactive()){
 data[data=='' | data==' ' | data=="Missing"] <- NA
 ```
 
+#### Connect to database
+```{r database, eval=FALSE}
+library(DBI)
+library(RPostgreSQL)
+library(sdalr)
+
+con <- sdalr::con_db(dbname = "arlington", user = '')
+
+q <- sprintf('SELECT * FROM %s;', "schema.table")
+df <- dbGetQuery(con, q)
+```
