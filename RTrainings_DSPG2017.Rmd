@@ -254,3 +254,115 @@ data.table::dcast(data = aqdt_melt, Month + Day ~ measurement) # this 'undoes' t
 
 ```
 
+#### Modeling
+```{r Modeling}
+devtools::install_github('bi-sdal/sdalr', force = TRUE)
+
+data("anscombe")
+
+summary(anscombe)
+
+sapply(1:4, function(x){
+    cor(anscombe[, x], anscombe[, x+4])})
+
+summary(lm(y1 ~ x1, data = anscombe))
+
+data('anscombosaurus', package = 'sdalr')
+
+summary(anscombosaurus)
+summary(lm(y~x, data = anscombosaurus))
+plot(anscombosaurus$x, anscombosaurus$y)
+
+library(ggplot2)
+diamonds <- diamonds
+
+quantile(diamonds$price, c(.10, .25, .50, .75))
+
+economics <- economics
+
+cor(economics$pce, economics$psavert)
+
+econ_subset <- economics[, c('pce', 'psavert', 'uempmed', 'unemploy')]
+
+library(GGally)
+
+GGally::ggpairs(data = econ_subset)
+m <- glm(price ~ carat, data=diamonds)
+summary(m)
+
+m <- glm(price ~ carat + table + as.factor(color), data=diamonds)
+summary(m)
+
+library(broom)
+broom::tidy(m)$estimate
+# broom::augment(m)
+broom::glance(m)
+
+plot(m)
+# do not want to see a pattern in the residual plot
+# QQ plot should show straight line (depending on distribution of QQ plot)
+
+mpg_bin <- function(mpg) {
+    if (mpg > 22) {
+        return('good')
+    } else {
+        return('poor')
+    }
+}
+
+mpg_bin_int <- function(mpg) {
+    if (mpg > 22) {
+        return(1)
+    } else {
+        return(0)
+    }
+}
+
+mtcars$mpg_bin <- sapply(X = mtcars$mpg, FUN = mpg_bin)
+mtcars$mpg_bin_int <- sapply(X = mtcars$mpg, FUN = mpg_bin_int)
+head(mtcars)
+
+m <- glm(formula = mpg_bin_int ~ hp + wt, data = mtcars, family = binomial(link = 'logit'))
+summary(m)
+
+results <- broom::tidy(m)
+results$or <- exp(results$estimate)
+results
+
+library(survival)
+head(heart) # about people on waiting list for Harvard heart transplant
+
+cox_model <- coxph(Surv(heart$start, heart$stop, heart$event) ~ age + year + as.factor(surgery) + as.factor(transplant), data = heart)
+summary(cox_model)
+
+plot(survfit(cox_model)) # kaplan meyer curve (everyone is alive on day zero, as the number of days increase, the solid line shows you how many people are left in your population)
+
+m1 <- glm(price ~ carat, data = diamonds)
+m2 <- glm(price ~ carat + as.factor(cut), data = diamonds)
+m3 <- glm(price ~ carat + as.factor(cut) + depth, data = diamonds)
+m4 <- glm(price ~ carat + as.factor(cut) + depth + table, data = diamonds)
+
+# ways of comparing models
+anova(m1, m2, m3, m4)
+
+# AIC and BIC put penalty on every new variable you add to a model
+# looking for the smallest number to identify best model
+AIC(m1, m2, m3, m4)
+BIC(m1, m2, m3, m4)
+
+# cross-validation (cv) prediction error for generalized linear models (glm)
+library(boot) 
+cv1 <- cv.glm(data = diamonds, glmfit = m1, K = 5) # K = number of partitions you want your data in (5 and 10 are popular)
+cv2 <- cv.glm(data = diamonds, glmfit = m2, K = 5)
+cv3 <- cv.glm(data = diamonds, glmfit = m3, K = 5)
+cv4 <- cv.glm(data = diamonds, glmfit = m4, K = 5)
+
+# print errors from all cross validations; pick the one with the smallest errors
+cv1$delta
+cv2$delta
+cv3$delta
+cv4$delta
+
+
+```
+
