@@ -61,23 +61,37 @@ if (interactive()){
 data[data=='' | data==' ' | data=="Missing"] <- NA
 ```
 
-<<<<<<< HEAD
+
 #### Importing Shapefiles: rgdal::readOGR
 ```{r}
 arlington_fireboxes <- readOGR("data/shapefiles/fireboxes", "Fireboxes")
 plot(arlington_fireboxes)
 ```
 
-=======
+
 #### Connect to database
 ```{r database, eval=FALSE}
 library(DBI)
 library(RPostgreSQL)
 library(sdalr)
 
-con <- sdalr::con_db(dbname = "arlington", user = '')
+con <- sdalr::con_db(dbname = "arlington", user = 'your_pid', pass = 'your_password')
 
 q <- sprintf('SELECT * FROM %s;', "schema.table")
 df <- dbGetQuery(con, q)
 ```
->>>>>>> 6d273faa0ffaa229cc8e85c7dd98c9bc6190e032
+#### Convert shapefile to dataframe (fortify while maintaining other info!)
+```{r shp_to_df, eval=FALSE}
+# Get ACS data
+acsPov <- <some acs data with block group id's and population counts for Roanoke>
+
+# Get GIS data
+Roanoke <- block_groups("Virginia", c("Roanoke County"))
+
+# convert Roanoke block groups to a dataframe
+Roanoke@data$id = rownames(Roanoke@data)
+Roanoke.points = fortify(Roanoke, region="id")
+Roanoke.df = left_join(Roanoke.points, Roanoke@data, by="id")
+# merge with ACS data
+RoanokeACS <- left_join(acsPov, Roanoke.df, by = c("geoID"="GEOID"))
+```
