@@ -94,4 +94,9 @@ Roanoke.points = fortify(Roanoke, region="id")
 Roanoke.df = left_join(Roanoke.points, Roanoke@data, by="id")
 # merge with ACS data
 RoanokeACS <- left_join(acsPov, Roanoke.df, by = c("geoID"="GEOID"))
+
+names(map_data)
+# [1] "GEO.id2"   "HD01_VD01" "HD01_VD05" "long"      "lat"       "order"     "hole"      "piece"
+# [9] "id"        "group"     "STATEFP"   "COUNTYFP"  "TRACTCE"   "BLKGRPCE"  "NAMELSAD"  "MTFCC"    
+# [17] "FUNCSTAT"  "ALAND"     "AWATER"    "INTPTLAT"  "INTPTLON"
 ```
