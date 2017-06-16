@@ -61,9 +61,23 @@ if (interactive()){
 data[data=='' | data==' ' | data=="Missing"] <- NA
 ```
 
+<<<<<<< HEAD
 #### Importing Shapefiles: rgdal::readOGR
 ```{r}
 arlington_fireboxes <- readOGR("data/shapefiles/fireboxes", "Fireboxes")
 plot(arlington_fireboxes)
 ```
 
+=======
+#### Connect to database
+```{r database, eval=FALSE}
+library(DBI)
+library(RPostgreSQL)
+library(sdalr)
+
+con <- sdalr::con_db(dbname = "arlington", user = '')
+
+q <- sprintf('SELECT * FROM %s;', "schema.table")
+df <- dbGetQuery(con, q)
+```
+>>>>>>> 6d273faa0ffaa229cc8e85c7dd98c9bc6190e032
