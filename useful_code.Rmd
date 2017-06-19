@@ -100,3 +100,7 @@ names(map_data)
 # [9] "id"        "group"     "STATEFP"   "COUNTYFP"  "TRACTCE"   "BLKGRPCE"  "NAMELSAD"  "MTFCC"    
 # [17] "FUNCSTAT"  "ALAND"     "AWATER"    "INTPTLAT"  "INTPTLON"
 ```
+#### subset Arlington latlongs
+```{r}
+%>% filter(long>(-77.172276) & long<(-77.032143) & lat>38.827357 & lat<38.934343)
+```
