@@ -104,3 +104,13 @@ names(map_data)
 ```{r}
 %>% filter(long>(-77.172276) & long<(-77.032143) & lat>38.827357 & lat<38.934343)
 ```
+
+#### trim profiling file for pasting into wiki
+```{r}
+file <- file.choose()
+mylines <- readLines(file)
+main_pos = grep("<div class=\"container-fluid main-container\">", mylines)
+body_pos = grep("</body>", mylines) - 1
+clipped <- c("<html>", mylines[main_pos:body_pos], "</html>")
+writeLines(clipped, paste0(file, ".clipped"))
+```
