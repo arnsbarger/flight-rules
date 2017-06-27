@@ -114,3 +114,8 @@ body_pos = grep("</body>", mylines) - 1
 clipped <- c("<html>", mylines[main_pos:body_pos], "</html>")
 writeLines(clipped, paste0(file, ".clipped"))
 ```
+
+#### get head of all 'date' variables
+```{r}
+head(mess[,grep("date", names(mess), ignore.case = T)])
+```
