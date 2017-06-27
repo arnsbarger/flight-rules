@@ -119,3 +119,14 @@ writeLines(clipped, paste0(file, ".clipped"))
 ```{r}
 head(mess[,grep("date", names(mess), ignore.case = T)])
 ```
+#### fill NA columns causing duplicate rows
+```{r}
+example <- df[df$uniqueID==126241,]
+cols <- names(example)[2:length(names(example))]
+
+f <- example %>%
+  dplyr::group_by(uniqueID) %>%
+  tidyr::fill(problematic_column_1:problematic_column_n) %>%
+  tidyr::fill(problematic_column_1:problematic_column_n, .direction = 'up') %>%
+  dplyr::distinct_(.dots = cols, .keep_all = TRUE)
+```
