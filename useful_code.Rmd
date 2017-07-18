@@ -130,3 +130,24 @@ f <- example %>%
   tidyr::fill(problematic_column_1:problematic_column_n, .direction = 'up') %>%
   dplyr::distinct_(.dots = cols, .keep_all = TRUE)
 ```
+
+#### match data to shapefile
+```{r}
+df <- acfd
+coordinates(df) <- ~longitude+latitude
+proj4string(df) <- proj4string(fireboxes)
+
+overlap_set <- over(df,fireboxes)
+
+completedata <- cbind(acfd, overlap_set)
+
+pts_in<-completedata[!is.na(over(df,fireboxes)$BOX_NUM),]
+
+ggplot() +
+geom_polygon(data = fireboxes, aes(x = long, y = lat, group = group),
+                             color = "black", fill = NA) + geom_point(data= pts_in, aes(x=longitude,y=latitude, color = as.factor(BOX_NUM)))
+
+
+#separate out the NA values in complete_data (these are the ones that are not in Arlington)
+agg_dat <- plyr::count(completedata, c('BOX_NUM'))
+```
