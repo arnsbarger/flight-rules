@@ -151,3 +151,11 @@ geom_polygon(data = fireboxes, aes(x = long, y = lat, group = group),
 #separate out the NA values in complete_data (these are the ones that are not in Arlington)
 agg_dat <- plyr::count(completedata, c('BOX_NUM'))
 ```
+
+#### apply family
+```{r}
+apply(mtcars, MARGIN = 1, my_function) # 1 indicates row-by-row, 2 indicates column-by-column
+# lapply (always gives you a list)
+# sapply (tries to give you same data format back)
+```
+
