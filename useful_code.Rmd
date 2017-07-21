@@ -131,7 +131,7 @@ f <- example %>%
   dplyr::distinct_(.dots = cols, .keep_all = TRUE)
 ```
 
-#### match data to shapefile
+#### match data to shapefile (Claire)
 ```{r}
 df <- acfd
 coordinates(df) <- ~longitude+latitude
@@ -157,5 +157,22 @@ agg_dat <- plyr::count(completedata, c('BOX_NUM'))
 apply(mtcars, MARGIN = 1, my_function) # 1 indicates row-by-row, 2 indicates column-by-column
 # lapply (always gives you a list)
 # sapply (tries to give you same data format back)
+```
+
+#### ssplot: heat map without fortifying shapefile (Aaron)
+```{r}
+fireboxes <- < load fireboxes.shp >
+# create median travel time
+median_travel <- aggregate(completedata$traveltimeVT, list(completedata$BOX_NUM), median)  # x = median travel time
+colnames(median_travel) <- c("BOX_NUM", "Median_Travel")
+
+# append median travel time to fireboxes
+plot(fireboxes)
+fireboxes <- tmaptools::append_data(fireboxes, median_travel, key.shp = "BOX_NUM", "BOX_NUM")
+head(fireboxes@data)
+plot(fireboxes)
+palette <- brewer.pal(n = 9, name = "OrRd")
+spplot(fireboxes, "Median_Travel" , main = "Median Travel Time by Fire Box", col.regions = palette, cuts = 9)
+
 ```
 
