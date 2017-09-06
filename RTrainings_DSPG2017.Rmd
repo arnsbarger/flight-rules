@@ -366,3 +366,219 @@ cv4$delta
 
 ```
 
+#### Bayesian Statistics
+```{r}
+# commands to run a simple 1-d mcmc.
+
+# number of mcmc scans
+Niter <- 1000  
+
+# logdens = log density
+logdens1 <- function(x){
+ # returns the log of the standard normal density 
+ # the density is not normalized here
+ return(-.5*x^2)
+}
+
+# build a vector to store the mcmc output
+x <- rep(0,Niter)
+
+# initialize x[1] with a starting value
+x[1] <- 20.0
+
+# compute the log of the posterior density for x[1]
+logpost <- logdens1(x[1])
+
+# width of metropolis proposal 
+a <- 3 # use a uniform U[-a,a] metropolis proposal (give or take 3)
+
+# carry out the Metropolis sampling
+for(i in 2:Niter){
+  can = x[i-1] + runif(1,-a,a) # generate candidate centered at old value, give or take a
+  logpostcan <- logdens1(can) # generate the posterior density of that
+  u <- runif(1) # generate uniform to tell us whether or not we accept this value
+  if(log(u) < (logpostcan - logpost)){ # if the uniform is < ratio of new/old posterior, then accept (leave current value at the old value)
+     # accept the proposal
+    x[i] <- can
+    logpost <- logpostcan # update the posterior density
+  } else{
+  x[i] <- x[i-1] # set the new value to the old value; leave logpost as is.
+  }
+}
+
+# make a plot of the output
+# use par to tell R to plot a single image, and set the margin area
+par(mfrow=c(1,2),oma=c(0,0,0,0))#,matlabr=c(4,4,1,1))
+plot(1:Niter,x,type='l')
+hist(x[-(1:100)],main=paste('a =',a,sep=''),xlab='x',probability=T)
+lines(seq(-3,3,length=200),dnorm(seq(-3,3,length=200)))
+
+browser()
+# now lets look at what happens if we change a and the starting value.
+# it'll be easier to make the mcmc iterations a function
+
+mcmc1d <- function(x0,Niter,a,LOGDENS){
+ # run a metropolis chain using U(x-a,x+a) proposals
+ # x0 is the starting value
+ # Niter is the number of scans in this metropolis chain
+ # LOGDENS is the log of the density from which we want draws.
+ 
+ # the function returns a vector holding the output from the Metropolis sample
+ x <- rep(0,Niter)
+
+ # initialize x[1] with a starting value
+ x[1] <- x0
+
+ # compute the log of the posterior density for x[1]
+ logpost <- LOGDENS(x[1])
+
+ # carry out the Metropolis sampling
+ for(i in 2:Niter){
+   can = x[i-1] + runif(1,-a,a)
+   logpostcan <- LOGDENS(can)
+   u <- runif(1)
+   if(log(u) < (logpostcan - logpost)){
+      # accept the proposal
+     x[i] <- can
+     logpost <- logpostcan
+   } else{
+   x[i] <- x[i-1] # set the new value to the old value; leave logpost as is.
+   }
+ }
+ return(x)
+}
+
+# first, let's look at the effect of changing the starting value
+# we'll look at a=20,10,5,0
+# this should motivate ideas about "burn-in":  Should we discard
+# some of the initial piece of the chain so that our estimates
+# are more accurate?
+
+x1 <- mcmc1d(20,1000,3,logdens1)
+x2 <- mcmc1d(10,1000,3,logdens1)
+x3 <- mcmc1d(5,1000,3,logdens1)
+x4 <- mcmc1d(0,1000,3,logdens1)
+
+# look at some plots
+
+par(mfrow=c(2,2),oma=c(0,0,0,0),mar=c(4,4,1,1))
+plot(1:Niter,x1,ylim=c(-3,21),type='l')
+plot(1:Niter,x2,ylim=c(-3,21),type='l')
+plot(1:Niter,x3,ylim=c(-3,21),type='l')
+plot(1:Niter,x4,ylim=c(-3,21),type='l')
+
+browser()
+# now, let's look at the effect of changing the proposal width a
+# we'll look at a=20,10,3,0.1
+x1 <- mcmc1d(20,1000,20,logdens1)
+x2 <- mcmc1d(20,1000,3,logdens1)
+x3 <- mcmc1d(20,1000,1,logdens1)
+x4 <- mcmc1d(20,1000,.1,logdens1)
+
+# look at some plots
+
+ # different widths - no labels
+par(mfrow=c(2,2),oma=c(0,0,0,0),mar=c(4,4,1,1))
+plot(1:Niter,x1,ylim=c(-3,21),type='l',xlab='iteration')
+plot(1:Niter,x2,ylim=c(-3,21),type='l',xlab='iteration')
+plot(1:Niter,x3,ylim=c(-3,21),type='l',xlab='iteration')
+plot(1:Niter,x4,ylim=c(-3,21),type='l',xlab='iteration')
+
+browser()
+
+ # show the labels
+par(mfrow=c(2,2),oma=c(0,0,0,0),mar=c(4,4,1,1))
+plot(1:Niter,x1,ylim=c(-3,21),type='l',xlab='iteration')
+text(700,17,'a=20')
+plot(1:Niter,x2,ylim=c(-3,21),type='l',xlab='iteration')
+text(700,17,'a=3')
+plot(1:Niter,x3,ylim=c(-3,21),type='l',xlab='iteration')
+text(700,17,'a=1')
+plot(1:Niter,x4,ylim=c(-3,21),type='l',xlab='iteration')
+text(700,17,'a=.1')
+
+# LESSON: a high (bad?) a is good to get you near the distribution quickly, but once you're close to it it doesn't perform as well as a lower a.
+
+browser()
+
+# now, let's look at the effect of changing the density
+# we'll look at a mixture of normals
+# a question we can look at is what width is best for
+# sampling from this density via the metropolis algorithm
+# 
+
+logdens2 <- function(x){
+ # returns a mixture of normals
+ # .6*N(mu=-1,sd=.4) + .4*N(mu=.8,sd=.4)
+ # the density is logged
+ dens <- .6*dnorm(x,-1,.4)+.4*dnorm(x,.8,.4)
+ return(log(dens))
+}
+
+logdens3 <- function(x){
+ # returns a mixture of normals
+ # .6*N(mu=-1,sd=.4) + .4*U(0,1)
+ # the density is logged
+ dens <- .6*dnorm(x,-1,.4)+.4*(x>0)*(x<1)
+ return(log(dens))
+}
+
+logdens4 <- function(x){
+ # returns a mixture of normals
+ # .6*U[-1.2,-.2] + .4*dnorm(x,1,.3)
+ # the density is logged
+ dens <- .6*(x > -1.2)*(x < -.2) +.4*dnorm(x,1,.3)
+ return(log(dens))
+}
+
+browser()
+# a plot of the density
+x <- seq(-3,3,length=200)
+par(mfrow=c(1,1),oma=c(0,0,0,0),mar=c(4,4,1,1))
+plot(x,exp(logdens2(x)),type='l')
+
+browser()
+
+x1 <- mcmc1d(2,1000,20,logdens2)
+x2 <- mcmc1d(2,1000,3,logdens2)
+x3 <- mcmc1d(2,1000,1,logdens2)
+x4 <- mcmc1d(2,1000,.2,logdens2)
+
+# look at some plots
+
+par(mfrow=c(2,2),oma=c(0,0,0,0),mar=c(4,4,1,1))
+plot(1:Niter,x1,ylim=c(-3,5),type='l',xlab='iteration')
+text(700,4,'a=20')
+plot(1:Niter,x2,ylim=c(-3,5),type='l',xlab='iteration')
+text(700,4,'a=3')
+plot(1:Niter,x3,ylim=c(-3,5),type='l',xlab='iteration')
+text(700,4,'a=1')
+plot(1:Niter,x4,ylim=c(-3,5),type='l',xlab='iteration')
+text(700,4,'a=.2')
+
+browser()
+
+par(mfrow=c(2,2),oma=c(0,0,0,0),mar=c(4,4,1,1))
+hist(x1[-(1:100)],probability=TRUE,ylim=c(0,.75),xlim=c(-3,3),xlab='x',
+  main='a=20')
+lines(x,exp(logdens2(x)))
+hist(x2[-(1:100)],probability=TRUE,ylim=c(0,.75),xlim=c(-3,3),xlab='x',
+  main='a=3')
+lines(x,exp(logdens2(x)))
+hist(x3[-(1:100)],probability=TRUE,ylim=c(0,.75),xlim=c(-3,3),xlab='x',
+  main='a=1')
+lines(x,exp(logdens2(x)))
+hist(x4[-(1:100)],probability=TRUE,ylim=c(0,.75),xlim=c(-3,3),xlab='x',
+  main='a=.2')
+lines(x,exp(logdens2(x)))
+
+browser()
+
+#
+# for the students, they can look at the mixture of normals problem.  What is
+# their estimate for the P(x > 1.5)?  What is their choice for proposal width a?
+# Did you discard any of the initial part of the chain?
+#
+
+```
+
