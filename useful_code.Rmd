@@ -174,5 +174,7 @@ plot(fireboxes)
 palette <- brewer.pal(n = 9, name = "OrRd")
 spplot(fireboxes, "Median_Travel" , main = "Median Travel Time by Fire Box", col.regions = palette, cuts = 9)
 
-```
+# remove all objects from envirionment matching the pattern
+rm(list=ls(pattern="temp"))
 
+```
