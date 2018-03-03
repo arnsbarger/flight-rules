@@ -177,4 +177,7 @@ spplot(fireboxes, "Median_Travel" , main = "Median Travel Time by Fire Box", col
 # remove all objects from envirionment matching the pattern
 rm(list=ls(pattern="temp"))
 
+## number of unique races in each distinct school
+(plyr::ddply(race_totals,~SCH_NAME,summarise,number_of_unique_races=length(unique(FEDERAL_RACE_CODE)))
+
 ```
