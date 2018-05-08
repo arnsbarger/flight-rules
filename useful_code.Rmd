@@ -181,3 +181,15 @@ rm(list=ls(pattern="temp"))
 (plyr::ddply(race_totals,~SCH_NAME,summarise,number_of_unique_races=length(unique(FEDERAL_RACE_CODE)))
 
 ```
+#### geocode
+```
+sites_va$google <- paste(sites_va$fullname, sites_va$address)
+
+for(i in 1:nrow(sites_va)){    
+  location <- sites_va$google[i]
+  coords <- ggmap::geocode(location, output = "latlon", source = "google")
+  sites_va$long[i] <- coords$lon
+  sites_va$lat[i] <- coords$lat
+ 
+}
+```
