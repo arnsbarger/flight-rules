@@ -35,7 +35,9 @@ To save:
 - "WriteOut" = "Save"
 - "^" = control key, not shift key...
 
-
+FOR IPUMS SAMPLES:
+mv mv usa_0000* ~/... (move multiple samples to the correct directory at once)
+gunzip usa_0000#.csv (unzip csv.gz files 1000x faster than Finder)
 
 
 ssh -L 8787:localhost:8787 sdal_r
