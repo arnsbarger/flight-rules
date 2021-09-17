@@ -3,6 +3,9 @@ Git Notes SDAL DSPG 2017
 Connect local folder to Github using personal access token:
 git remote set-url origin https://PERSONAL-ACCESS-TOKEN@github.com/arnsbarger/REPO-NAME.git
 
+Where does this repo push/pull to/from?
+git config --get remote.origin.url
+
 git config —list (check your account settings)
 mkdir new_directory (create git repository from scratch)
 git init (initialize git repository)
